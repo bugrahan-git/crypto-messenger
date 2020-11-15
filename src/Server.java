@@ -4,16 +4,16 @@ import java.net.Socket;
 
 public class Server {
     private int port;
-    private Socket socket = null;
-    private DataInputStream in = null;
+    private Socket socket;
+    private DataInputStream in;
+    
     public Server() {
-	this.port = 32222;
+    	this.port = 32222;
     }
     
     public static void main(String ... args) {
-	Server S = new Server();
-	
-	S.start();
+    	Server S = new Server();
+		S.start();
     }    
     
     private void start() {
@@ -24,6 +24,7 @@ public class Server {
 				in = new DataInputStream(
 					new BufferedInputStream(socket.getInputStream()));
 				System.out.println(in.readUTF());
+				
 			}
 	}catch(Exception e) {
 	    e.printStackTrace();
