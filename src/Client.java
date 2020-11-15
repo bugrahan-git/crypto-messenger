@@ -6,12 +6,10 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.text.BadLocationException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Client extends JFrame {
 
@@ -55,9 +53,7 @@ public class Client extends JFrame {
 	private JLabel isConnected;
 
 	private Socket socket            = null;
-	private DataInputStream input   = null;
 	private DataOutputStream out     = null;
-
 
 	/**
 	 * Create the frame.
@@ -226,11 +222,12 @@ public class Client extends JFrame {
 				}
 			}
 		});
+		
 		final String[] name = new String[1];
+		
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				name[0] = JOptionPane.showInputDialog(btnConnect,
-						"What is your name?", null);
+				name[0] = JOptionPane.showInputDialog(btnConnect, "Enter user name?", null);
 				if(name[0] !=null){
 					try {
 						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
