@@ -228,11 +228,11 @@ public class Client extends JFrame {
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				name[0] = JOptionPane.showInputDialog(btnConnect, "Enter user name?", null);
-				if(name[0] !=null){
+				if(name[0] != null) {
 					try {
 						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
-						out    = new DataOutputStream(socket.getOutputStream());
-						out.writeUTF("User "+name[0]+" connected to server");
+						out = new DataOutputStream(socket.getOutputStream());
+						out.writeUTF("User " + name[0] + " connected to server");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -240,8 +240,10 @@ public class Client extends JFrame {
 					btnConnect.setEnabled(false);
 					btnDisconnect.setEnabled(true);
 					textPaneText.setEditable(true);
+					
 					btnEncrypt.setEnabled(true);
 					btnSend.setEnabled(true);
+					
 					rdbtnAes.setEnabled(true);
 					rdbtnDes.setEnabled(true);
 					rdbtnCbc.setEnabled(true);
@@ -258,8 +260,7 @@ public class Client extends JFrame {
 		btnDisconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					out.writeUTF("User "+name[0]+" is disconnected from server");
-					socket.close();
+					out.writeUTF("User " + name[0] + " is disconnected from server");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
