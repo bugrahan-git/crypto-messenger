@@ -69,10 +69,18 @@ public class Client extends JFrame {
 		btnConnect = new JButton("\u25B6 Connect");
 		btnDisconnect = new JButton("\u25A0 Disconnect");
 		
+		ButtonGroup radioButtonsMethod = new ButtonGroup();
+		ButtonGroup radioButtonsMode = new ButtonGroup();
+		
 		rdbtnAes = new JRadioButton("AES");
 		rdbtnDes = new JRadioButton("DES");
 		rdbtnCbc = new JRadioButton("CBC");
 		rdbtnOfb = new JRadioButton("OFB");
+		
+		radioButtonsMethod.add(rdbtnAes);
+		radioButtonsMethod.add(rdbtnDes);
+		radioButtonsMode.add(rdbtnCbc);
+		radioButtonsMode.add(rdbtnOfb);
 		
 		textPaneChat = new JTextPane();
 		JScrollPane textPaneChat_scroll = new JScrollPane(textPaneChat);
@@ -191,7 +199,6 @@ public class Client extends JFrame {
 
 		final JFrame username_frame = new JFrame();
 
-
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String test = textPaneText.getText();
@@ -204,7 +211,13 @@ public class Client extends JFrame {
 				}
 			}
 		});
+		
 
+		rdbtnAes.setEnabled(false);
+		rdbtnDes.setEnabled(false);
+		rdbtnCbc.setEnabled(false);
+		rdbtnOfb.setEnabled(false);
+		
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String name = JOptionPane.showInputDialog(btnConnect,
@@ -216,6 +229,16 @@ public class Client extends JFrame {
 					btnEncrypt.setEnabled(true);
 					btnSend.setEnabled(true);
 					isConnected.setText("Connected");
+					
+					
+					rdbtnAes.setEnabled(true);
+					rdbtnDes.setEnabled(true);
+					rdbtnCbc.setEnabled(true);
+					rdbtnOfb.setEnabled(true);
+					
+
+					rdbtnAes.setSelected(true);
+					rdbtnCbc.setSelected(true);
 				}
 			}
 		});
