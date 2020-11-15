@@ -55,7 +55,6 @@ public class Client extends JFrame {
 	private JLabel isConnected;
 	
 	private Socket socket            = null;
-	private DataInputStream input   = null;
 	private DataOutputStream out     = null;
 	
 
@@ -208,8 +207,6 @@ public class Client extends JFrame {
 		btnEncrypt.setEnabled(false);
 		btnSend.setEnabled(false);
 
-		final JFrame username_frame = new JFrame();
-
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String test = textPaneText.getText();
@@ -229,38 +226,32 @@ public class Client extends JFrame {
 		rdbtnCbc.setEnabled(false);
 		rdbtnOfb.setEnabled(false);
 		
+		final String[] name = new String[1];
 		
-
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String name = JOptionPane.showInputDialog(btnConnect,
+				name[0] = JOptionPane.showInputDialog(btnConnect,
 						"What is your name?", null);
-				if(name!=null){
-
-		    try {
-			socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
-			out = new DataOutputStream(socket.getOutputStream());
-			out.writeByte(1);
-			out.writeUTF(name);
-			out.flush();
-			
-		    } catch (IOException e) {
-			e.printStackTrace();
-		    }
+				if(name[0]!=null) {
+					try {
+						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
+						out = new DataOutputStream(socket.getOutputStream());
+						out.writeUTF("User " + name[0] + " connected to server");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 		    
-    				    btnConnect.setEnabled(false);
+					btnConnect.setEnabled(false);
 					btnDisconnect.setEnabled(true);
 					textPaneText.setEditable(true);
 					btnEncrypt.setEnabled(true);
 					btnSend.setEnabled(true);
 					isConnected.setText("Connected");
-					
-					
+
 					rdbtnAes.setEnabled(true);
 					rdbtnDes.setEnabled(true);
 					rdbtnCbc.setEnabled(true);
 					rdbtnOfb.setEnabled(true);
-					
 
 					rdbtnAes.setSelected(true);
 					rdbtnCbc.setSelected(true);
@@ -270,6 +261,13 @@ public class Client extends JFrame {
 		
 		btnDisconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				try {
+					out.writeUTF("User " + name[0] + " is disconnected from server");
+					socket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
 				btnConnect.setEnabled(true);
 				btnDisconnect.setEnabled(false);
 				textPaneText.setEditable(false);
