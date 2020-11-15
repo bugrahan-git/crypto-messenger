@@ -53,11 +53,11 @@ public class Client extends JFrame {
 	private JButton btnSend;
 	
 	private JLabel isConnected;
-
+	
 	private Socket socket            = null;
 	private DataInputStream input   = null;
 	private DataOutputStream out     = null;
-
+	
 
 	/**
 	 * Create the frame.
@@ -80,10 +80,18 @@ public class Client extends JFrame {
 		btnConnect = new JButton("\u25B6 Connect");
 		btnDisconnect = new JButton("\u25A0 Disconnect");
 		
+		ButtonGroup radioButtonsMethod = new ButtonGroup();
+		ButtonGroup radioButtonsMode = new ButtonGroup();
+		
 		rdbtnAes = new JRadioButton("AES");
 		rdbtnDes = new JRadioButton("DES");
 		rdbtnCbc = new JRadioButton("CBC");
 		rdbtnOfb = new JRadioButton("OFB");
+		
+		radioButtonsMethod.add(rdbtnAes);
+		radioButtonsMethod.add(rdbtnDes);
+		radioButtonsMode.add(rdbtnCbc);
+		radioButtonsMode.add(rdbtnOfb);
 		
 		textPaneChat = new JTextPane();
 		JScrollPane textPaneChat_scroll = new JScrollPane(textPaneChat);
@@ -200,6 +208,7 @@ public class Client extends JFrame {
 		btnEncrypt.setEnabled(false);
 		btnSend.setEnabled(false);
 
+		final JFrame username_frame = new JFrame();
 
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -213,6 +222,14 @@ public class Client extends JFrame {
 				}
 			}
 		});
+		
+
+		rdbtnAes.setEnabled(false);
+		rdbtnDes.setEnabled(false);
+		rdbtnCbc.setEnabled(false);
+		rdbtnOfb.setEnabled(false);
+		
+		
 
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -220,21 +237,33 @@ public class Client extends JFrame {
 						"What is your name?", null);
 				if(name!=null){
 
-					try {
-						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
-						input  = new DataInputStream(System.in);
-						out    = new DataOutputStream(socket.getOutputStream());
-						out.writeUTF(name);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
-					btnConnect.setEnabled(false);
+		    try {
+			socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
+			out = new DataOutputStream(socket.getOutputStream());
+			out.writeByte(1);
+			out.writeUTF(name);
+			out.flush();
+			
+		    } catch (IOException e) {
+			e.printStackTrace();
+		    }
+		    
+    				    btnConnect.setEnabled(false);
 					btnDisconnect.setEnabled(true);
 					textPaneText.setEditable(true);
 					btnEncrypt.setEnabled(true);
 					btnSend.setEnabled(true);
 					isConnected.setText("Connected");
+					
+					
+					rdbtnAes.setEnabled(true);
+					rdbtnDes.setEnabled(true);
+					rdbtnCbc.setEnabled(true);
+					rdbtnOfb.setEnabled(true);
+					
+
+					rdbtnAes.setSelected(true);
+					rdbtnCbc.setSelected(true);
 				}
 			}
 		});
@@ -253,4 +282,5 @@ public class Client extends JFrame {
 	}
 		
 }
+
 
