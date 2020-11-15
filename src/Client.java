@@ -215,8 +215,7 @@ public class Client extends JFrame {
 				String test = textPaneText.getText();
 				int len = textPaneChat.getText().length();
 				try {
-					textPaneChat.getStyledDocument().insertString(len, test+"\n", null
-					);
+					textPaneChat.getStyledDocument().insertString(len, test + "\n", null);
 				} catch (BadLocationException e) {
 					e.printStackTrace();
 				}
