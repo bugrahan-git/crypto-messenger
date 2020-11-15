@@ -52,8 +52,9 @@ public class Client extends JFrame {
 
 	private JLabel isConnected;
 
-	private Socket socket            = null;
-	private DataOutputStream out     = null;
+	private Socket socket;
+	private DataOutputStream out;
+	private String name;
 
 	/**
 	 * Create the frame.
@@ -222,16 +223,15 @@ public class Client extends JFrame {
 			}
 		});
 		
-		final String[] name = new String[1];
 		
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				name[0] = JOptionPane.showInputDialog(btnConnect, "Enter user name", null);
-				if(name[0] != null) {
+				name = JOptionPane.showInputDialog(btnConnect, "Enter user name", null);
+				if(name != null) {
 					try {
 						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
 						out = new DataOutputStream(socket.getOutputStream());
-						out.writeUTF("User " + name[0] + " connected to server");
+						out.writeUTF("User " + name + " connected to server");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -259,7 +259,7 @@ public class Client extends JFrame {
 		btnDisconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					out.writeUTF("User " + name[0] + " is disconnected from server");
+					out.writeUTF("User " + name + " is disconnected from server");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
