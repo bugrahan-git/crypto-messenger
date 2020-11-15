@@ -229,7 +229,7 @@ public class Client extends JFrame {
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				name = JOptionPane.showInputDialog(btnConnect, "Enter user name", null);
-				if(name != null) {
+				if(name.strip() != "") {
 					try {
 						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
 						out = new DataOutputStream(socket.getOutputStream());
