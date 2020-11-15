@@ -1,15 +1,9 @@
-import java.awt.EventQueue;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import java.awt.*;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JRadioButton;
-import javax.swing.JTextPane;
-import java.awt.Font;
+import javax.swing.text.BadLocationException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -82,6 +76,7 @@ public class Client extends JFrame {
 		rdbtnOfb = new JRadioButton("OFB");
 		
 		textPaneChat = new JTextPane();
+		JScrollPane textPaneChat_scroll = new JScrollPane(textPaneChat);
 		
 		JLabel lblText = new JLabel("Text");
 		JLabel lblCryptedText = new JLabel("Crypted Text");
@@ -91,7 +86,9 @@ public class Client extends JFrame {
 		
 		textPaneText = new JTextPane();
 		textPaneCryptedtext = new JTextPane();
-		
+		JScrollPane textPaneCryptedtext_scroll = new JScrollPane(textPaneCryptedtext);
+		JScrollPane textPaneText_scroll = new JScrollPane(textPaneText);
+
 		textPaneCryptedtext.setEditable(false);
 		textPaneChat.setEditable(false);
 		textPaneText.setEditable(false);
@@ -129,12 +126,12 @@ public class Client extends JFrame {
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(lblText))
-						.addComponent(textPaneText, GroupLayout.PREFERRED_SIZE, 183, GroupLayout.PREFERRED_SIZE))
+						.addComponent(textPaneText_scroll, GroupLayout.PREFERRED_SIZE, 183, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(textPaneCryptedtext, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
+							.addComponent(textPaneCryptedtext_scroll, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
 							.addGap(18)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addComponent(btnSend, GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
@@ -142,7 +139,7 @@ public class Client extends JFrame {
 						.addComponent(lblCryptedText))
 					.addContainerGap())
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(textPaneChat, GroupLayout.PREFERRED_SIZE, 490, GroupLayout.PREFERRED_SIZE)
+					.addComponent(textPaneChat_scroll, GroupLayout.PREFERRED_SIZE, 490, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addComponent(isConnected, GroupLayout.PREFERRED_SIZE, 463, GroupLayout.PREFERRED_SIZE)
@@ -170,19 +167,19 @@ public class Client extends JFrame {
 							.addComponent(btnConnect)
 							.addComponent(btnDisconnect)))
 					.addGap(18)
-					.addComponent(textPaneChat, GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
+					.addComponent(textPaneChat_scroll, GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblCryptedText)
 						.addComponent(lblText))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(textPaneText, GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
+						.addComponent(textPaneText_scroll, GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addComponent(btnEncrypt)
 							.addGap(3)
 							.addComponent(btnSend, GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE))
-						.addComponent(textPaneCryptedtext, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
+						.addComponent(textPaneCryptedtext_scroll, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(isConnected))
 		);
@@ -191,7 +188,21 @@ public class Client extends JFrame {
 		btnDisconnect.setEnabled(false);
 		btnEncrypt.setEnabled(false);
 		btnSend.setEnabled(false);
-		
+
+
+		btnSend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String test = textPaneText.getText();
+				int len = textPaneChat.getText().length();
+				try {
+					textPaneChat.getStyledDocument().insertString(len, test+"\n", null
+					);
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				btnConnect.setEnabled(false);
@@ -200,7 +211,6 @@ public class Client extends JFrame {
 				btnEncrypt.setEnabled(true);
 				btnSend.setEnabled(true);
 				isConnected.setText("Connected");
-				
 			}
 		});
 		
