@@ -8,8 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class Client extends JFrame {
-	
-	
+		
 	public Client() {
 		initializeGUI();
 	}
@@ -40,8 +39,8 @@ public class Client extends JFrame {
 	private JRadioButton rdbtnCbc;
 	private JRadioButton rdbtnOfb;
 	
-	private JTextPane textPaneChat;				// Main chat text-pane
-	private JTextPane textPaneText;				// Message to send text-pane
+	private JTextPane textPaneChat;			// Main chat text-pane
+	private JTextPane textPaneText;			// Message to send text-pane
 	private JTextPane textPaneCryptedtext;		// Crypted message text-pane
 	
 	private JButton btnEncrypt;
@@ -68,7 +67,7 @@ public class Client extends JFrame {
 		JLabel lblMode = new JLabel("Mode");
 		
 		btnConnect = new JButton("\u25B6 Connect");
-		btnDisconnect = new JButton("\u25a0 Disconnect");
+		btnDisconnect = new JButton("\u25A0 Disconnect");
 		
 		rdbtnAes = new JRadioButton("AES");
 		rdbtnDes = new JRadioButton("DES");
@@ -85,8 +84,9 @@ public class Client extends JFrame {
 		btnSend = new JButton("Send");
 		
 		textPaneText = new JTextPane();
-		textPaneCryptedtext = new JTextPane();
 		JScrollPane textPaneCryptedtext_scroll = new JScrollPane(textPaneCryptedtext);
+		
+		textPaneCryptedtext = new JTextPane();
 		JScrollPane textPaneText_scroll = new JScrollPane(textPaneText);
 
 		textPaneCryptedtext.setEditable(false);
