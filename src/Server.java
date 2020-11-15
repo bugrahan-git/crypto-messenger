@@ -20,7 +20,6 @@ public class Server {
 		try(ServerSocket ss = new ServerSocket(this.port)) {
 			System.out.println("Server is running on port " + this.port);
 			while (true) {
-				System.out.println("test");
 				socket = ss.accept();
 				in = new DataInputStream(
 					new BufferedInputStream(socket.getInputStream()));
