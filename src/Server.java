@@ -3,19 +3,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    private final int port;
-
-    public Server() {
-    	this.port = 32222;
-    }
+    private final static int port = 32222;
     
-    public static void main(String ... args) {
+    @SuppressWarnings("resource")
+	public static void main(String ... args) {
 		Socket socket = null;
 		ServerSocket serverSocket = null;
 		try {
-			serverSocket = new ServerSocket(32222);
-			System.out.println("Server is running on port " + 32222);
-
+			serverSocket = new ServerSocket(port);
+			System.out.println("Server is running on port " + port);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -25,15 +21,15 @@ public class Server {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			new EchoThread(socket).start();
+			new UserThread(socket).start();
 		}
 	}
 }
 
-class EchoThread extends Thread {
+class UserThread extends Thread {
 	protected Socket socket;
 
-	public EchoThread(Socket clientSocket) {
+	public UserThread(Socket clientSocket) {
 		this.socket = clientSocket;
 	}
 
