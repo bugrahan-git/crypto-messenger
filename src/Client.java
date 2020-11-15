@@ -210,6 +210,9 @@ public class Client extends JFrame {
 		rdbtnDes.setEnabled(false);
 		rdbtnCbc.setEnabled(false);
 		rdbtnOfb.setEnabled(false);
+		
+		rdbtnAes.setSelected(true);
+		rdbtnCbc.setSelected(true);
 
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -222,7 +225,6 @@ public class Client extends JFrame {
 				}
 			}
 		});
-		
 		
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -247,9 +249,6 @@ public class Client extends JFrame {
 					rdbtnDes.setEnabled(true);
 					rdbtnCbc.setEnabled(true);
 					rdbtnOfb.setEnabled(true);
-					
-					rdbtnAes.setSelected(true);
-					rdbtnCbc.setSelected(true);
 
 					isConnected.setText("Connected");
 				}
@@ -268,6 +267,12 @@ public class Client extends JFrame {
 				textPaneText.setEditable(false);
 				btnEncrypt.setEnabled(false);
 				btnSend.setEnabled(false);
+				
+				rdbtnAes.setEnabled(false);
+				rdbtnDes.setEnabled(false);
+				rdbtnCbc.setEnabled(false);
+				rdbtnOfb.setEnabled(false);
+				
 				isConnected.setText("Disconnected");
 			}
 		});
