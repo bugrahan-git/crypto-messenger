@@ -17,14 +17,14 @@ public class Server {
     }    
     
     private void start() {
-		System.out.println("Server is running on port " + this.port);
 		try(ServerSocket ss = new ServerSocket(this.port)) {
-			while (true){
+			System.out.println("Server is running on port " + this.port);
+			while (true) {
+				System.out.println("test");
 				socket = ss.accept();
 				in = new DataInputStream(
 					new BufferedInputStream(socket.getInputStream()));
 				System.out.println(in.readUTF());
-				
 			}
 	}catch(Exception e) {
 	    e.printStackTrace();
