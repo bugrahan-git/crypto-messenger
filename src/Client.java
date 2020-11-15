@@ -226,7 +226,7 @@ public class Client extends JFrame {
 		
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				name[0] = JOptionPane.showInputDialog(btnConnect, "Enter user name?", null);
+				name[0] = JOptionPane.showInputDialog(btnConnect, "Enter user name", null);
 				if(name[0] != null) {
 					try {
 						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
