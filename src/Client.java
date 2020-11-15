@@ -68,7 +68,7 @@ public class Client extends JFrame {
 		JLabel lblMode = new JLabel("Mode");
 		
 		btnConnect = new JButton("\u25B6 Connect");
-		btnDisconnect = new JButton("\u25FE Disconnect");
+		btnDisconnect = new JButton("\u25a0 Disconnect");
 		
 		rdbtnAes = new JRadioButton("AES");
 		rdbtnDes = new JRadioButton("DES");
