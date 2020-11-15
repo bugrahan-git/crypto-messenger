@@ -273,7 +273,21 @@ public class Client extends JFrame {
 				rdbtnCbc.setEnabled(false);
 				rdbtnOfb.setEnabled(false);
 				
+				textPaneText.setText("");
+				textPaneChat.setText("");
+				textPaneCryptedtext.setText("");
+				
 				isConnected.setText("Disconnected");
+			}
+		});
+		
+		btnSend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					out.writeUTF(textPaneText.getText());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
