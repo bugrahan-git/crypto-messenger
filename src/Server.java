@@ -3,30 +3,50 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    private int port;
-    private Socket socket;
-    private DataInputStream in;
-    
+    private final int port;
+
     public Server() {
     	this.port = 32222;
     }
     
     public static void main(String ... args) {
-    	Server S = new Server();
-		S.start();
-    }    
-    
-    private void start() {
-		try(ServerSocket ss = new ServerSocket(this.port)) {
-			System.out.println("Server is running on port " + this.port);
-			while (true) {
-				socket = ss.accept();
-				in = new DataInputStream(
-					new BufferedInputStream(socket.getInputStream()));
-				System.out.println(in.readUTF());
+		Socket socket = null;
+		ServerSocket serverSocket = null;
+		try {
+			serverSocket = new ServerSocket(32222);
+			System.out.println("Server is running on port " + 32222);
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		while (true) {
+			try {
+				socket = serverSocket.accept();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-	}catch(Exception e) {
-	    e.printStackTrace();
+			new EchoThread(socket).start();
+		}
 	}
-    }
+}
+
+class EchoThread extends Thread {
+	protected Socket socket;
+
+	public EchoThread(Socket clientSocket) {
+		this.socket = clientSocket;
+	}
+
+	public void run() {
+		DataInputStream inp;
+		while(true){
+		try {
+			inp = new DataInputStream(
+					new BufferedInputStream(socket.getInputStream()));
+			System.out.println(inp.readUTF());
+
+		} catch (IOException e) {
+			return;
+		}
+	}}
 }
