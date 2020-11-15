@@ -189,6 +189,8 @@ public class Client extends JFrame {
 		btnEncrypt.setEnabled(false);
 		btnSend.setEnabled(false);
 
+		final JFrame username_frame = new JFrame();
+
 
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -205,12 +207,16 @@ public class Client extends JFrame {
 
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				btnConnect.setEnabled(false);
-				btnDisconnect.setEnabled(true);
-				textPaneText.setEditable(true);
-				btnEncrypt.setEnabled(true);
-				btnSend.setEnabled(true);
-				isConnected.setText("Connected");
+				String name = JOptionPane.showInputDialog(btnConnect,
+						"What is your name?", null);
+				if(name!=null){
+					btnConnect.setEnabled(false);
+					btnDisconnect.setEnabled(true);
+					textPaneText.setEditable(true);
+					btnEncrypt.setEnabled(true);
+					btnSend.setEnabled(true);
+					isConnected.setText("Connected");
+				}
 			}
 		});
 		
