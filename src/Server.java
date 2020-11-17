@@ -72,10 +72,11 @@ class UserThread extends Thread {
             System.out.println(serverMessage);
             String clientMessage = "";
 
-            while (!clientMessage.equals("leblebi")){
+            while (clientMessage != null){
                 clientMessage = reader.readLine();
                 serverMessage = userName + ": " + clientMessage;
-                server.broadcast(serverMessage);
+                if(clientMessage!=null)
+                    server.broadcast(serverMessage);
             }
             server.removeUser(userName, this);
         } catch (IOException ex) {

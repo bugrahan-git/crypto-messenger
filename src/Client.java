@@ -7,8 +7,6 @@ import javax.swing.text.BadLocationException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
-import java.io.Console;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,7 +14,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Client extends JFrame {
 
@@ -41,8 +38,6 @@ public class Client extends JFrame {
 		});
 	}
 
-	private JPanel contentPane;
-
 	private JButton btnConnect;
 	private JButton btnDisconnect;
 
@@ -64,7 +59,7 @@ public class Client extends JFrame {
 	private Socket socket;
 	private Client client;
 	private PrintWriter writer;
-	private BufferedReader reader=null;
+	private ReadThread reader;
 	
 	public String getName() {
 		return this.name;
@@ -80,7 +75,7 @@ public class Client extends JFrame {
 
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		contentPane = new JPanel();
+		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 
@@ -237,7 +232,8 @@ public class Client extends JFrame {
 						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
 
 						 try {
-						 		new ReadThread(socket, client, textPaneChat).start();
+						 		reader = new ReadThread(socket, client, textPaneChat);
+							 	reader.start();
 					            OutputStream output = socket.getOutputStream();
 					            writer = new PrintWriter(output, true);
 					            writer.println(name);
@@ -289,6 +285,12 @@ public class Client extends JFrame {
 				textPaneCryptedtext.setText("");
 				
 				isConnected.setText("Disconnected");
+				try {
+					socket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
 			}
 		});
 		
@@ -298,11 +300,7 @@ public class Client extends JFrame {
 				writer.println(msg);
 			}
 		});
-
-
-
 	}
-
 }
 
 
@@ -318,30 +316,33 @@ class ReadThread extends Thread {
         this.chat = chat;
 
         try {
-            InputStream input = socket.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(input));
+        	InputStream input = socket.getInputStream();
+        	reader = new BufferedReader(new InputStreamReader(input));
+
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     public void run() {
-        while (true) {
+        while (reader!=null) {
             try {
                 String response = reader.readLine();
 				int len = chat.getText().length();
 				try {
-					chat.getStyledDocument().insertString(len, response + "\n", null);
+					if(!response.equals("null")) {
+						chat.getStyledDocument().insertString(len, response + "\n", null);
+					}
 				} catch (BadLocationException e) {
 					e.printStackTrace();
 				}
 
             } catch (IOException ex) {
-                ex.printStackTrace();
                 break;
             }
         }
     }
+
 }
 
 
