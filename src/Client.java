@@ -6,14 +6,22 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.text.BadLocationException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.Console;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class Client extends JFrame {
 
 	public Client() {
+		this.client = this;
 		initializeGUI();
 	}
 
@@ -45,21 +53,27 @@ public class Client extends JFrame {
 
 	private JTextPane textPaneChat;			// Main chat text-pane
 	private JTextPane textPaneText;			// Message to send text-pane
-	private JTextPane textPaneCryptedtext;		// Crypted message text-pane
+	private JTextPane textPaneCryptedtext;	// Crypted message text-pane
 
 	private JButton btnEncrypt;
 	private JButton btnSend;
 
 	private JLabel isConnected;
 
-	private Socket socket;
-	private DataOutputStream out;
 	private String name;
-
+	private Socket socket;
+	private Client client;
+	private PrintWriter writer;
+	private BufferedReader reader=null;
+	
+	public String getName() {
+		return this.name;
+	}
+	
 	/**
 	 * Create the frame.
 	 */
-
+	
 	private void initializeGUI() {
 		setTitle("Crypto Messenger");
 		setBounds(100, 100, 500, 800);
@@ -213,29 +227,27 @@ public class Client extends JFrame {
 		
 		rdbtnAes.setSelected(true);
 		rdbtnCbc.setSelected(true);
-
-		btnSend.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				String test = textPaneText.getText();
-				int len = textPaneChat.getText().length();
-				try {
-					textPaneChat.getStyledDocument().insertString(len, test + "\n", null);
-				} catch (BadLocationException e) {
-					e.printStackTrace();
-				}
-			}
-		});
 		
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				name = JOptionPane.showInputDialog(btnConnect, "Enter user name", null);
-				if(name.strip() != "") {
+				if(name != null) {
+					
 					try {
 						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
-						out = new DataOutputStream(socket.getOutputStream());
-						out.writeUTF("User " + name + " connected to server");
-					} catch (IOException e) {
-						e.printStackTrace();
+
+						 try {
+						 		new ReadThread(socket, client, textPaneChat).start();
+					            OutputStream output = socket.getOutputStream();
+					            writer = new PrintWriter(output, true);
+					            writer.println(name);
+					        } catch (IOException ex) {
+					            ex.printStackTrace();
+					        }
+			            
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 
 					btnConnect.setEnabled(false);
@@ -251,17 +263,16 @@ public class Client extends JFrame {
 					rdbtnOfb.setEnabled(true);
 
 					isConnected.setText("Connected");
+
 				}
 			}
 		});
 
+
+
 		btnDisconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					out.writeUTF("User " + name + " is disconnected from server");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				
 				btnConnect.setEnabled(true);
 				btnDisconnect.setEnabled(false);
 				textPaneText.setEditable(false);
@@ -283,14 +294,55 @@ public class Client extends JFrame {
 		
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					out.writeUTF(textPaneText.getText());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				String msg = textPaneText.getText();
+				writer.println(msg);
 			}
 		});
+
+
 
 	}
 
 }
+
+
+class ReadThread extends Thread {
+    private BufferedReader reader;
+    private Socket socket;
+    private Client client;
+    private JTextPane chat;
+
+    public ReadThread(Socket socket, Client client, JTextPane chat) {
+        this.socket = socket;
+        this.client = client;
+        this.chat = chat;
+
+        try {
+            InputStream input = socket.getInputStream();
+            reader = new BufferedReader(new InputStreamReader(input));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void run() {
+        while (true) {
+            try {
+                String response = reader.readLine();
+				int len = chat.getText().length();
+				try {
+					chat.getStyledDocument().insertString(len, response + "\n", null);
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+				}
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                break;
+            }
+        }
+    }
+}
+
+
+
