@@ -66,6 +66,7 @@ public class Crypt {
                 byte[] encodedMSG64 = Base64.getEncoder().encode(bytesMSG);
                 return new String(encodedMSG64);
             }
+
             byte[] bytesMSG64 = Base64.getDecoder().decode(msg);
             CIPHER_DES_CBC.init(Cipher.DECRYPT_MODE, keyDES, IvSpecDES);
             byte[] decodedMSG = CIPHER_DES_CBC.doFinal(bytesMSG64);
@@ -91,6 +92,7 @@ public class Crypt {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
@@ -110,6 +112,7 @@ public class Crypt {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
