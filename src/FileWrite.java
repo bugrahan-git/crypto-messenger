@@ -5,10 +5,11 @@ public class FileWrite {
 
     private static final FileWrite fw = new FileWrite();
 
-    private FileWrite() { super(); }
+    private FileWrite() { 
+	super(); 
+    }
 
-    public synchronized void write(String str)
-    {
+    public synchronized void write(String str) {
         try {
             File outputF = new File("log.txt");
             FileWriter writer = new FileWriter(outputF, true);
@@ -19,8 +20,7 @@ public class FileWrite {
         }
     }
 
-    public static FileWrite getInstance()
-    {
+    public static FileWrite getInstance() {
         return fw;
     }
 
