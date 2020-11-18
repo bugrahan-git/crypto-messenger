@@ -57,9 +57,10 @@ public class Client extends JFrame {
 
 	private String name;
 	private Socket socket;
-	private Client client;
+	private final Client client;
 	private PrintWriter writer;
 	private ReadThread reader;
+	private Crypt crypt;
 	
 	public String getName() {
 		return this.name;
@@ -110,10 +111,10 @@ public class Client extends JFrame {
 		btnSend = new JButton("Send");
 
 		textPaneText = new JTextPane();
-		JScrollPane textPaneCryptedtext_scroll = new JScrollPane(textPaneCryptedtext);
+		JScrollPane textPaneText_scroll = new JScrollPane(textPaneText);
 
 		textPaneCryptedtext = new JTextPane();
-		JScrollPane textPaneText_scroll = new JScrollPane(textPaneText);
+		JScrollPane textPaneCryptedtext_scroll = new JScrollPane(textPaneCryptedtext);
 
 		textPaneCryptedtext.setEditable(false);
 		textPaneChat.setEditable(false);
@@ -237,12 +238,12 @@ public class Client extends JFrame {
 					            OutputStream output = socket.getOutputStream();
 					            writer = new PrintWriter(output, true);
 					            writer.println(name);
+
 					        } catch (IOException ex) {
 					            ex.printStackTrace();
 					        }
 			            
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 
@@ -258,7 +259,8 @@ public class Client extends JFrame {
 					rdbtnCbc.setEnabled(true);
 					rdbtnOfb.setEnabled(true);
 
-					isConnected.setText("Connected");
+					isConnected.setText("Connected: "+ name);
+					crypt = new Crypt(reader.iv_aes, reader.iv_des, reader.key_aes, reader.key_des);
 
 				}
 			}
@@ -296,10 +298,34 @@ public class Client extends JFrame {
 		
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String msg = textPaneText.getText();
+				String msg = textPaneCryptedtext.getText();
 				writer.println(msg);
 			}
 		});
+
+		btnEncrypt.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				String encrypted = crypt_type(textPaneText.getText(), true);
+				textPaneCryptedtext.setText(encrypted);
+			}
+		});
+	}
+
+	private String crypt_type(String msg, boolean isEnc)
+	{
+		if(rdbtnAes.isSelected() && rdbtnCbc.isSelected())
+			return crypt.AES_CBC(msg, isEnc);
+
+		if(rdbtnAes.isSelected() && rdbtnOfb.isSelected())
+			return crypt.AES_OFB(msg, isEnc);
+
+		if(rdbtnDes.isSelected() && rdbtnCbc.isSelected())
+			return crypt.DES_CBC(msg, isEnc);
+
+		if(rdbtnDes.isSelected() && rdbtnOfb.isSelected())
+			return crypt.DES_OFB(msg, isEnc);
+
+		return null;
 	}
 }
 
@@ -309,6 +335,11 @@ class ReadThread extends Thread {
     private Socket socket;
     private Client client;
     private JTextPane chat;
+    String key_aes;
+    String key_des;
+    String iv_aes;
+    String iv_des;
+
 
     public ReadThread(Socket socket, Client client, JTextPane chat) {
         this.socket = socket;
@@ -325,9 +356,18 @@ class ReadThread extends Thread {
     }
 
     public void run() {
+    	int i=0;
         while (reader!=null) {
             try {
-                String response = reader.readLine();
+				if(i<1)
+				{
+					key_aes = reader.readLine();
+					key_des = reader.readLine();
+					iv_aes = reader.readLine();
+					iv_des = reader.readLine();
+					i++;
+				}
+				String response = reader.readLine();
 				int len = chat.getText().length();
 				try {
 					if(!response.equals("null")) {
