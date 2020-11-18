@@ -24,16 +24,16 @@ public class Client extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Client frame = new Client();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	    EventQueue.invokeLater(new Runnable() {
+		public void run() {
+		    try{
+			Client frame = new Client();
+			frame.setVisible(true);
+		    } catch (Exception e) {
+			e.printStackTrace();
+		    }
+		}
+	    });
 	}
 
 	private JButton btnConnect;
@@ -44,8 +44,8 @@ public class Client extends JFrame {
 	private JRadioButton rdbtnCbc;
 	private JRadioButton rdbtnOfb;
 
-	private JTextPane textPaneChat;			// Main chat text-pane
-	private JTextPane textPaneText;			// Message to send text-pane
+	private JTextPane textPaneChat;		// Main chat text-pane
+	private JTextPane textPaneText;		// Message to send text-pane
 	private JTextPane textPaneCryptedtext;	// Crypted message text-pane
 
 	private JButton btnEncrypt;
@@ -61,7 +61,7 @@ public class Client extends JFrame {
 	private Crypt crypt;
 	
 	public String getName() {
-		return this.name;
+	    return this.name;
 	}
 	
 	/**
@@ -71,8 +71,6 @@ public class Client extends JFrame {
 	private void initializeGUI() {
 		setTitle("Crypto Messenger");
 		setBounds(100, 100, 500, 800);
-
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -223,30 +221,35 @@ public class Client extends JFrame {
 		rdbtnCbc.setSelected(true);
 
 		this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
+		    public void windowClosing(WindowEvent e) {
+		    System.exit(0);
+		    }
 		});
+
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				name = JOptionPane.showInputDialog(btnConnect, "Enter user name", null);
-				while(name.trim().equals("")){
+				if(name == null)
+				    return;
+				    
+				while (name.trim().equals("")) {
 					name = JOptionPane.showInputDialog(btnConnect, "You have to enter user name", null);
+					if(name == null)
+					    return;
 				}
-
 				try {
 					socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
 
-					 try {
-							 reader = new ReadThread(socket, client, textPaneChat, crypt);
-							 reader.start();
-							OutputStream output = socket.getOutputStream();
-							writer = new PrintWriter(output, true);
-							writer.println(name);
+					 try{
+					    reader = new ReadThread(socket, client, textPaneChat, crypt);
+					    reader.start();
+					    OutputStream output = socket.getOutputStream();
+					    writer = new PrintWriter(output, true);
+					    writer.println(name);
 
-						} catch (IOException ex) {
-							ex.printStackTrace();
-						}
+					} catch (IOException ex) {
+					    ex.printStackTrace();
+					}
 
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -266,11 +269,8 @@ public class Client extends JFrame {
 
 				isConnected.setText("Connected: "+ name);
 				crypt = new Crypt(reader.iv_aes, reader.iv_des, reader.key_aes, reader.key_des);
-
 			}
 		});
-
-
 
 		btnDisconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -292,11 +292,11 @@ public class Client extends JFrame {
 				
 				isConnected.setText("Disconnected");
 				try {
-					socket.close();
+				    name = null;
+				    socket.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+				    e.printStackTrace();
 				}
-
 			}
 		});
 		
@@ -312,25 +312,22 @@ public class Client extends JFrame {
 					textPaneText.setText("");
 				}
 				else
-					textPaneCryptedtext.setText("Please encrypt your message for your safety.");
+				    JOptionPane.showMessageDialog(null, "Encrypt your message", "Warning", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 
 		btnEncrypt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				String encrypted = crypt_type(textPaneText.getText(), true);
-				if(!Objects.equals(textPaneText.getText(), "")){
+				if(!Objects.equals(textPaneText.getText(), ""))
 					textPaneCryptedtext.setText(encrypted);
-				}
 				else
-					textPaneText.setText("Please write a message.");
-
+				    JOptionPane.showMessageDialog(null, "Enter a message", "Warning", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 	}
 
-	public String crypt_type(String msg, boolean isEnc)
-	{
+	public String crypt_type(String msg, boolean isEnc) {
 		if(rdbtnAes.isSelected() && rdbtnCbc.isSelected())
 			return crypt.AES_CBC(msg, isEnc);
 
