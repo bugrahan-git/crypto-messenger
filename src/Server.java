@@ -1,8 +1,7 @@
-import javax.crypto.KeyGenerator;
+import javax.crypto.*;
 import java.io.*;
 import java.net.*;
-import java.security.Key;
-import java.security.SecureRandom;
+import java.security.*;
 import java.util.*;
 
 public class Server {
@@ -39,18 +38,17 @@ public class Server {
 
 
     void broadcast(String message) {
-        for (UserThread aUser : userThreads) {
-            aUser.sendMessage(message);
+        for (UserThread ut : userThreads) {
+            ut.sendMessage(message);
         }
     }
 
-    void removeUser(String userName, UserThread aUser) {
-        userThreads.remove(aUser);
+    void removeUser(String userName, UserThread ut) {
+        userThreads.remove(ut);
         System.out.println("User " + userName + " disconnected from server.");
     }
 
-    private void keygen()
-    {
+    private void keygen() {
         SecureRandom secRandom = new SecureRandom();
 
         try {
@@ -82,7 +80,7 @@ public class Server {
             FileWrite.getInstance().write("Generated IV (AES): " + getIvAES());
             FileWrite.getInstance().write("Generated IV (DES): " + getIvDES()+ "\n");
 
-        }catch(Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
@@ -149,15 +147,15 @@ class UserThread extends Thread {
             writer.println(server.getIvAES());
             writer.println(server.getIvDES());
 
-
-            while (clientMessage != null){
+            while(clientMessage != null) {
                 clientMessage = reader.readLine();
                 serverMessage = userName + "\u708e" + clientMessage;
-                if(clientMessage!=null)
+                if(clientMessage != null)
                     server.broadcast(serverMessage);
             }
+
             server.removeUser(userName, this);
-        } catch (IOException ex) {
+        } catch(IOException ex) {
             ex.printStackTrace();
         }
     }
