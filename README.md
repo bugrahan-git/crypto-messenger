@@ -2,13 +2,17 @@
 
 ## Compile
 
-`javac Client.java Server.java`
+`javac Client.java Server.java FileWrite.java Crypt.java`
 
 ## Run
 
 ### Server
 
 `java Server`
+
+### Client
+
+`java Client`
 
 ### Add New Client
 `java Client`
