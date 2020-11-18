@@ -6,14 +6,12 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.text.BadLocationException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
 import java.net.Inet4Address;
 import java.net.Socket;
+import java.util.Objects;
 
 public class Client extends JFrame {
 
@@ -223,46 +221,52 @@ public class Client extends JFrame {
 		
 		rdbtnAes.setSelected(true);
 		rdbtnCbc.setSelected(true);
-		
+
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+		});
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				name = JOptionPane.showInputDialog(btnConnect, "Enter user name", null);
-				if(name != null) {
-					
-					try {
-						socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
-
-						 try {
-						 		reader = new ReadThread(socket, client, textPaneChat);
-							 	reader.start();
-					            OutputStream output = socket.getOutputStream();
-					            writer = new PrintWriter(output, true);
-					            writer.println(name);
-
-					        } catch (IOException ex) {
-					            ex.printStackTrace();
-					        }
-			            
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-
-					btnConnect.setEnabled(false);
-					btnDisconnect.setEnabled(true);
-					textPaneText.setEditable(true);
-					
-					btnEncrypt.setEnabled(true);
-					btnSend.setEnabled(true);
-					
-					rdbtnAes.setEnabled(true);
-					rdbtnDes.setEnabled(true);
-					rdbtnCbc.setEnabled(true);
-					rdbtnOfb.setEnabled(true);
-
-					isConnected.setText("Connected: "+ name);
-					crypt = new Crypt(reader.iv_aes, reader.iv_des, reader.key_aes, reader.key_des);
-
+				while(name.trim().equals("")){
+					name = JOptionPane.showInputDialog(btnConnect, "You have to enter user name", null);
 				}
+
+				try {
+					socket = new Socket(Inet4Address.getLocalHost().getHostAddress(), 32222);
+
+					 try {
+							 reader = new ReadThread(socket, client, textPaneChat, crypt);
+							 reader.start();
+							OutputStream output = socket.getOutputStream();
+							writer = new PrintWriter(output, true);
+							writer.println(name);
+
+						} catch (IOException ex) {
+							ex.printStackTrace();
+						}
+
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+
+				btnConnect.setEnabled(false);
+				btnDisconnect.setEnabled(true);
+				textPaneText.setEditable(true);
+
+				btnEncrypt.setEnabled(true);
+				btnSend.setEnabled(true);
+
+				rdbtnAes.setEnabled(true);
+				rdbtnDes.setEnabled(true);
+				rdbtnCbc.setEnabled(true);
+				rdbtnOfb.setEnabled(true);
+
+				isConnected.setText("Connected: "+ name);
+				crypt = new Crypt(reader.iv_aes, reader.iv_des, reader.key_aes, reader.key_des);
+
 			}
 		});
 
@@ -299,19 +303,33 @@ public class Client extends JFrame {
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String msg = textPaneCryptedtext.getText();
-				writer.println(msg);
+				if(!msg.equals("")){
+					writer.println(msg);
+					String message = textPaneCryptedtext.getText() + "\n" + name + "> "
+							+ textPaneText.getText();
+					FileWrite.getInstance().write(message);
+					textPaneCryptedtext.setText("");
+					textPaneText.setText("");
+				}
+				else
+					textPaneCryptedtext.setText("Please encrypt your message for your safety.");
 			}
 		});
 
 		btnEncrypt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				String encrypted = crypt_type(textPaneText.getText(), true);
-				textPaneCryptedtext.setText(encrypted);
+				if(!Objects.equals(textPaneText.getText(), "")){
+					textPaneCryptedtext.setText(encrypted);
+				}
+				else
+					textPaneText.setText("Please write a message.");
+
 			}
 		});
 	}
 
-	private String crypt_type(String msg, boolean isEnc)
+	public String crypt_type(String msg, boolean isEnc)
 	{
 		if(rdbtnAes.isSelected() && rdbtnCbc.isSelected())
 			return crypt.AES_CBC(msg, isEnc);
@@ -327,6 +345,7 @@ public class Client extends JFrame {
 
 		return null;
 	}
+
 }
 
 
@@ -339,12 +358,13 @@ class ReadThread extends Thread {
     String key_des;
     String iv_aes;
     String iv_des;
+    public Crypt crypt;
 
-
-    public ReadThread(Socket socket, Client client, JTextPane chat) {
+    public ReadThread(Socket socket, Client client, JTextPane chat, Crypt crypt) {
         this.socket = socket;
         this.client = client;
         this.chat = chat;
+        this.crypt = crypt;
 
         try {
         	InputStream input = socket.getInputStream();
@@ -367,11 +387,18 @@ class ReadThread extends Thread {
 					iv_des = reader.readLine();
 					i++;
 				}
+				String message = "";
 				String response = reader.readLine();
 				int len = chat.getText().length();
+				String[] user_message = response.split("\u708e");
+				String decrypted_message = client.crypt_type(user_message[1], false);
+				if(decrypted_message!=null)
+					message = user_message[1] + "\n" + user_message[0] + "> "
+						+ decrypted_message;
+
 				try {
-					if(!response.equals("null")) {
-						chat.getStyledDocument().insertString(len, response + "\n", null);
+					if(!response.equals("null") && decrypted_message!=null) {
+						chat.getStyledDocument().insertString(len, message + "\n", null);
 					}
 				} catch (BadLocationException e) {
 					e.printStackTrace();

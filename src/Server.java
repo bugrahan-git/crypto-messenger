@@ -1,5 +1,4 @@
 import javax.crypto.KeyGenerator;
-import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.net.*;
 import java.security.Key;
@@ -20,16 +19,14 @@ public class Server {
 
     public void execute() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            crypt();
+            keygen();
             System.out.println("Server is listening on port " + port);
-
             while (true) {
                 Socket socket = serverSocket.accept();
                 UserThread newUser = new UserThread(socket, this);
                 userThreads.add(newUser);
                 newUser.start();
             }
-
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -52,7 +49,7 @@ public class Server {
         System.out.println("User " + userName + " disconnected from server.");
     }
 
-    private void crypt()
+    private void keygen()
     {
         SecureRandom secRandom = new SecureRandom();
 
@@ -74,6 +71,16 @@ public class Server {
 
             setKeyAES(keyAES);
             setKeyDES(keyDES);
+
+            System.out.println("Generated Key (AES): " + getKeyAES());
+            System.out.println("Generated Key (DES): " + getKeyDES());
+            System.out.println("Generated IV (AES): " + getIvAES());
+            System.out.println("Generated IV (DES): " + getIvDES());
+            System.out.println();
+            FileWrite.getInstance().write("Generated Key (AES): " + getKeyAES());
+            FileWrite.getInstance().write("Generated Key (DES): " + getKeyDES());
+            FileWrite.getInstance().write("Generated IV (AES): " + getIvAES());
+            FileWrite.getInstance().write("Generated IV (DES): " + getIvDES()+ "\n");
 
         }catch(Exception e) {
             e.printStackTrace();
@@ -111,6 +118,7 @@ public class Server {
     public void setIvAES(byte[] ivAES) {
         IvAES = ivAES;
     }
+
 }
 
 class UserThread extends Thread {
@@ -144,7 +152,7 @@ class UserThread extends Thread {
 
             while (clientMessage != null){
                 clientMessage = reader.readLine();
-                serverMessage = userName + ": " + clientMessage;
+                serverMessage = userName + "\u708e" + clientMessage;
                 if(clientMessage!=null)
                     server.broadcast(serverMessage);
             }
