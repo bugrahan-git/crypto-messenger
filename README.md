@@ -1,4 +1,4 @@
-# BBM465-02
+# Crypto Messenger
 
 ## Compile
 
